@@ -25,6 +25,8 @@ class Client:
         
     def disconnect(self):
         # TODO: Handle disconnection
+
+        self.connection= socket.close()
         pass
 
     def receive_message(self, message):
