@@ -19,15 +19,20 @@ class MessageParser():
         if payload['response'] in self.possible_responses:
             return self.possible_responses[payload['response']](payload)
         else:
-            print('Response not valid')
+            print('Response not valid, server not supporting')
             # Response not valid
 
     def parse_error(self, payload):
+        print ("ERROR ", payload['content'])
     
     def parse_info(self, payload):
+        print ("Info ", payload['timestamp'], "\n ", "Server: " , payload['content'])
     
-    # Include more methods for handling the different responses... 
+    def parse_message(self, payload):
+        print (payload['timestamp'], payload['sender'], ":")
+        print ('   ', payload['content'])
 	
-	def parse_message(self, payload):
-	
-	def parse_history(self, payload):
+    def parse_history(self, payload):
+        print('-- CHAT HISTORY --')
+        for message in (payload['content']):
+            self.parse(message)

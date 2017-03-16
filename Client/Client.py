@@ -17,8 +17,8 @@ class Client:
         self.host=host
         self.server_port=server_port
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-        # TODO: Finish init process with necessary code
+        self.receiver=MessageReceiver(self, self.connection)
+
         self.run()
 
     def run(self):
@@ -26,19 +26,44 @@ class Client:
         self.connection.connect((self.host, self.server_port))
         receiver=MessageReceiver(self)
         receiver.start()
-        print("Client ", receiver.name, " ready...")
-        
+        print("Hello and welcome to a highly functional chat service")
+        while (1):
+            userInput = raw_input()
+
+            try:
+                message = userInput.split(' ', 1)
+
+            except (ValueError, KeyboardInterrupt):
+                message = [userInput, None]
+
+            payload = {'request': message[0].lower(), 'content': message[1]}
+            client.send_payload(message)
+            if (payload['request']=='logout'):
+                sleep(0.5) 
+                client.disconnect()
+
+
     def disconnect(self):
+        self.connection.shutdown(1.5)
         self.connection= socket.close()
+        print('Connection successfully terminated')
+        exit(0)
         pass
 
     def receive_message(self, message):
         incoming=json.loads(message)
-        
+
         pass
 
     def send_payload(self, data):
         # TODO: Handle sending of a payload
+
+        try:
+            self.connection.send(data)
+
+        except Exception as shitHappend:
+            print (shitHappend)
+            print ("Message not sent")
 
         pass
         
@@ -53,11 +78,6 @@ if __name__ == '__main__':
     No alterations are necessary
     """
     client = Client('localhost', 9998)
-    while (1):
-        message = raw_input('')
-        client.send_payload(message)
-        if (message=='logout'):
-            break
-    client.disconnect()
+    
 
 
