@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import socketserver
+import json
+from time import gmtime, strftime
 
 """
 Variables and functions that must be used by all the ClientHandler objects
@@ -21,12 +23,40 @@ class ClientHandler(socketserver.BaseRequestHandler):
         self.ip = self.client_address[0]
         self.port = self.client_address[1]
         self.connection = self.request
-
+		
+		#Student code:
+		username = '';
+		
         # Loop that listens for messages from the client
         while True:
             received_string = self.connection.recv(4096)
+			
+			deliveryPayload = {'timestamp': '', 'sender': '', 'response': '', 'content': '',}
+			deliveryPayload['timestamp'] = strftime("%Y-%m-%d %H:%M:%S", localtime())
             
             # TODO: Add handling of received payload from client
+			
+			payload = json.load(received_string) # decode the JSON object
+			if payload['request'] == 'login' && username == '':
+				username == payload['content']
+				deliveryPayload['sender'] = 'server'
+				deliveryPayload['response'] = 'info'
+				deliveryPayload['content'] = 'Successful login - username: ' + username 
+			else if payload['request'] == 'help':
+				deliveryPayload['sender'] = 'server'
+				deliveryPayload['response'] = 'info'
+				deliveryPayload = 'Supported requests:\n' + \
+									'login <username>\t\t\t-log in log in with the given username' + \
+									'logout\t\t\t-log out' + \
+									'msg <message>\t\t\t-send message' + \
+									'names\t\t\t-list users in chat' + \
+									'help\t\t\t-view help text'
+			
+			else if(username == ''): #Sjekk om alt stemmer... dessverre
+				deliveryPayload['sender'] = 'server' # TODO: READ AND REMOVE, sender er ikke server når response er en 'message' - i.e brukeren sender en msg
+				deliveryPayload['response'] = 'error'
+				deliveryPayload = 'You must login first.'
+				
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
