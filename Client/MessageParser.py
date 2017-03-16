@@ -19,6 +19,7 @@ class MessageParser():
         if payload['response'] in self.possible_responses:
             return self.possible_responses[payload['response']](payload)
         else:
+            print('Response not valid')
             # Response not valid
 
     def parse_error(self, payload):
