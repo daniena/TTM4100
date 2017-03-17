@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import socket
+import json
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
 
@@ -24,11 +25,11 @@ class Client:
     def run(self):
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
-        receiver=MessageReceiver(self)
+        receiver=MessageReceiver(self, self.connection)
         receiver.start()
         print("Hello and welcome to a highly functional chat service")
         while (1):
-            userInput = raw_input()
+            userInput = input()
 
             try:
                 message = userInput.split(' ', 1)
@@ -37,10 +38,11 @@ class Client:
                 message = [userInput, None]
 
             payload = {'request': message[0].lower(), 'content': message[1]}
-            client.send_payload(message)
+            print (payload['request'])
+            self.send_payload(message)
             if (payload['request']=='logout'):
                 sleep(0.5) 
-                client.disconnect()
+                self.disconnect()
 
 
     def disconnect(self):
@@ -59,7 +61,7 @@ class Client:
         # TODO: Handle sending of a payload
 
         try:
-            self.connection.send(data)
+            self.connection.send(json.dumps(data))
 
         except Exception as shitHappend:
             print (shitHappend)

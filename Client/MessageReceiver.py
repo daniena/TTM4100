@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
+from MessageParser import MessageParser
 
 class MessageReceiver(Thread):
     """
@@ -14,15 +15,12 @@ class MessageReceiver(Thread):
         """
 
         # Flag to run thread as a deamon
-        self.daemon = True
+        super(MessageReceiver, self).__init__()
         self.client=client
         self.connection=connection
-
-
-      
-
+        self.daemon = True
     def run(self):
-        MsgParser=MessageParser()
+        MsgParser = MessageParser()
         while True:
             data = self.connection.recv(8192)
             if data:
