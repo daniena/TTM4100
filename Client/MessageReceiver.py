@@ -22,7 +22,7 @@ class MessageReceiver(Thread):
     def run(self):
         MsgParser = MessageParser()
         while True:
-            data = self.connection.recv(8192)
+            data = (self.connection.recv(8192)).decode()
             if data:
-               MsgParser.parse()
+               MsgParser.parse(data)
         pass

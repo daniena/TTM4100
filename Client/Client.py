@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import socket
 import json
+import time
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
 
@@ -32,16 +33,16 @@ class Client:
             userInput = input()
 
             try:
-                message = userInput.split(' ', 1)
+                request, message = userInput.split(' ', 1)
 
-            except (ValueError, KeyboardInterrupt):
-                message = [userInput, None]
-
-            payload = {'request': message[0].lower(), 'content': message[1]}
-            print (payload['request'])
-            self.send_payload(message)
+            except (ValueError, KeyboardInterrupt, IndexError):
+                message = None
+                request = userInput
+            
+            payload = {'request': request.lower(), 'content': message}
+            self.send_payload(json.dumps(payload))
             if (payload['request']=='logout'):
-                sleep(0.5) 
+                time.sleep(0.5) 
                 self.disconnect()
 
 
@@ -59,9 +60,8 @@ class Client:
 
     def send_payload(self, data):
         # TODO: Handle sending of a payload
-
         try:
-            self.connection.send(json.dumps(data))
+            self.connection.send(data.encode())
 
         except Exception as shitHappend:
             print (shitHappend)
