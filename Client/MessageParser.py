@@ -33,6 +33,6 @@ class MessageParser():
         print ('   ', payload['content'])
 	
     def parse_history(self, payload):
-        print('-- CHAT HISTORY --')
+        print('Server history')
         for message in (payload['content']):
             self.parse(message)
